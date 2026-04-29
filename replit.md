@@ -2,7 +2,13 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+pnpm workspace monorepo for **CostForge** — a FinTech + AI cost prediction platform that helps freelancers and small teams choose a confident fixed budget for the AI agent systems they build for clients. Frontend-only React + Tailwind UI for the hackathon demo; the user maintains a separate Django REST Framework backend that will be wired up later.
+
+## Artifacts
+
+- `artifacts/costforge` — React + Vite + Tailwind frontend at `/`. All data is mocked via React context + localStorage so the entire flow is demoable end-to-end (project creation → service selection with LLM suggestions/fuzzy search/registry browse → variant picking with community votes → usage entry → cost prediction).
+- `artifacts/api-server` — placeholder Express server at `/api` (not used by the costforge frontend in this build).
+- `artifacts/mockup-sandbox` — design canvas sandbox.
 
 ## Stack
 

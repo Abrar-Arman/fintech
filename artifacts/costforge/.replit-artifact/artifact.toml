@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "CostForge"
+version = "1.0.0"
+id = "artifacts/costforge"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24075
+
+[services.development]
+run = "pnpm --filter @workspace/costforge run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/costforge", "run", "build" ]
+publicDir = "artifacts/costforge/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24075"
+BASE_PATH = "/"
