@@ -66,6 +66,16 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    proxy: {
+      // Browser calls /backend/api/* → forwarded to the Django REST
+      // Framework server running on port 8000. The /backend prefix is
+      // stripped so Django still sees its native /api/* routes.
+      "/backend": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/backend/, ""),
+      },
+    },
   },
   preview: {
     port,

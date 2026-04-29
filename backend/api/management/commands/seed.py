@@ -207,6 +207,16 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        # Demo user for the no-login frontend bootstrap. Always reset the
+        # password so the deterministic credentials in src/lib/api.ts work
+        # after any DB reset.
+        demo_user, _ = User.objects.get_or_create(
+            username="demo",
+            defaults={"email": "demo@costforge.dev"},
+        )
+        demo_user.set_password("costforge-demo-2026")
+        demo_user.save()
+
         created_services = 0
         created_variants = 0
         for entry in SERVICES:
