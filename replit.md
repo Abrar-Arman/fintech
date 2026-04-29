@@ -7,7 +7,8 @@ pnpm workspace monorepo for **CostForge** — a FinTech + AI cost prediction pla
 ## Artifacts
 
 - `artifacts/costforge` — React + Vite + Tailwind frontend at `/`. All data is mocked via React context + localStorage so the entire flow is demoable end-to-end (project creation → service selection with LLM suggestions/fuzzy search/registry browse → variant picking with community votes → usage entry → cost prediction).
-- `artifacts/api-server` — placeholder Express server at `/api` (not used by the costforge frontend in this build).
+- `backend/` — Django 5 + Django REST Framework API on port 8000 (workflow: `CostForge Django API`). SQLite database, JWT auth via `djangorestframework-simplejwt`, fuzzy matching via `rapidfuzz`, optional Anthropic-powered service suggestions (heuristic fallback when `ANTHROPIC_API_KEY` is not set). 13 services and their official pricing variants are seeded by `python manage.py seed`. See `backend/README.md` for the full endpoint table.
+- `artifacts/api-server` — placeholder Express server at `/api` (not used; the Django backend is the real API).
 - `artifacts/mockup-sandbox` — design canvas sandbox.
 
 ## Stack
