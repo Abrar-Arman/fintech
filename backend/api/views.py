@@ -1,3 +1,17 @@
+"""
+HTTP endpoints for the CostForge REST API.
+
+Layout:
+    - RegisterView / LoginView / MeView      → JWT auth
+    - ServiceViewSet                         → /api/services/  (CRUD + suggest + fuzzy)
+    - PricingVariantViewSet                  → /api/variants/ (CRUD + voting)
+    - ProjectViewSet                         → /api/projects/ (CRUD + add/remove
+                                               services + cost calculation)
+    - pricing_models_view                    → /api/pricing-models/ (schema lookup)
+
+Permissions follow DRF defaults set in settings.REST_FRAMEWORK:
+read endpoints are open, writes require a valid JWT.
+"""
 from decimal import Decimal
 
 from django.contrib.auth import authenticate, get_user_model

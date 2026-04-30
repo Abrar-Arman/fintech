@@ -18,15 +18,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "CostForge Django API"
+args = "Backend (Django)"
 
 [[workflows.workflow]]
-name = "CostForge Django API"
+name = "Backend (Django)"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd backend && python manage.py migrate --noinput && python manage.py seed && python manage.py runserver 0.0.0.0:8000"
+args = "cd backend && pip install -q -r requirements.txt && python manage.py migrate --noinput && python manage.py seed && python manage.py runserver 0.0.0.0:8000"
 waitForPort = 8000
 
 [workflows.workflow.metadata]
@@ -39,6 +39,14 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
+
+[[ports]]
+localPort = 5173
+externalPort = 5173
 
 [[ports]]
 localPort = 8000

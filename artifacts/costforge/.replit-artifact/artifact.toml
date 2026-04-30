@@ -9,23 +9,31 @@ router = "path"
 name = "react-vite"
 version = "1.0.0"
 
+# In development the user-facing service is the Vite dev server.
+# It proxies /api/* to the Django workflow on port 8000.
 [[services]]
 name = "web"
 paths = [ "/" ]
-localPort = 24075
-
-[services.development]
-run = "pnpm --filter @workspace/costforge run dev"
-
-[services.production]
-build = [ "pnpm", "--filter", "@workspace/costforge", "run", "build" ]
-publicDir = "artifacts/costforge/dist/public"
-serve = "static"
-
-[[services.production.rewrites]]
-from = "/*"
-to = "/index.html"
+localPort = 5000
 
 [services.env]
-PORT = "24075"
-BASE_PATH = "/"
+PORT = "5000"
+
+[services.development]
+run = "cd ../../frontend && npm install && npm run dev"
+
+# In production, Django serves both the React build and the REST API
+# from a single process on $PORT. The build step builds the React app,
+# installs Python deps, migrates the DB, seeds it, and collects static
+# files into Django's STATIC_ROOT.
+[services.production]
+build = [
+  "bash",
+  "-c",
+  "cd ../../frontend && npm ci && npm run build && cd ../backend && pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py seed && python manage.py collectstatic --noinput",
+]
+run = [
+  "bash",
+  "-c",
+  "cd ../../backend && DJANGO_DEBUG=0 python manage.py runserver 0.0.0.0:$PORT",
+]

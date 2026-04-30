@@ -1,23 +1,49 @@
 """
 Django settings for the CostForge backend.
 
-Single-app project that exposes a REST API consumed by the
-React/Vite frontend in artifacts/costforge.
+This is a single Django app (`api`) that exposes a REST API consumed
+by the React frontend in ../frontend.
+
+In development:
+    - Django runs on port 8000 and serves /api/* only.
+    - The React dev server (Vite) runs on port 5000 and proxies /api/*
+      to this server (see frontend/vite.config.ts).
+
+In production:
+    - You build the React app once (`cd frontend && npm run build`).
+    - Django serves /api/* AND the built React bundle from frontend/dist
+      via WhiteNoise — a single process, single port. That makes
+      deployment dead simple (no separate static host required).
 """
 from pathlib import Path
 from datetime import timedelta
 import os
 
+# Project layout:
+#   <repo>/backend/costforge/settings.py      <- this file
+#   <repo>/backend/                            -> BASE_DIR
+#   <repo>/frontend/dist/                      -> built React bundle
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE_DIR.parent
+FRONTEND_DIST = REPO_ROOT / "frontend" / "dist"
+
+# ---- Core ------------------------------------------------------------------
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
     "dev-only-insecure-secret-key-replace-me-in-production",
 )
 
+# DEBUG defaults to True for local development; the deploy script flips it
+# off via the DJANGO_DEBUG=0 environment variable.
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
+# We don't bother enumerating allowed hosts on Replit (the platform is
+# already a trusted reverse proxy). On a "real" production host you'd
+# replace "*" with your actual domain(s).
 ALLOWED_HOSTS = ["*"]
+
+# ---- Apps ------------------------------------------------------------------
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -32,9 +58,14 @@ INSTALLED_APPS = [
     "api",
 ]
 
+# ---- Middleware ------------------------------------------------------------
+# Order matters here. CorsMiddleware must come first (so OPTIONS preflights
+# get the right headers) and WhiteNoise must come right after Security
+# so it can serve static assets without going through any other middleware.
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -48,7 +79,9 @@ ROOT_URLCONF = "costforge.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        # In production, look for the React build's index.html via the
+        # template engine so Django can render it as the SPA shell.
+        "DIRS": [FRONTEND_DIST],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -63,6 +96,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "costforge.wsgi.application"
 
+# ---- Database --------------------------------------------------------------
+# SQLite keeps the demo zero-setup. Swap this to Postgres for a real deploy.
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -82,16 +117,32 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
+# ---- Static files (Django + React build) -----------------------------------
+# Django's own admin/CSS lives at /static/ via STATIC_ROOT.
+# The React bundle (JS, CSS, images) is served from /assets/ via the
+# `STATICFILES_DIRS` entry pointing at frontend/dist/assets.
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    # Only added if the React app has actually been built. In dev (where
+    # Vite is serving the frontend) this directory does not exist and
+    # WhiteNoise simply has nothing to serve here.
+    *([FRONTEND_DIST / "assets"] if (FRONTEND_DIST / "assets").exists() else []),
+]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage" if not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# ---- Django REST Framework -------------------------------------------------
 REST_FRAMEWORK = {
+    # JWT for the React client; SessionAuthentication kept around so the
+    # built-in /admin/ login still works.
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
+    # Read endpoints (GET) are open so unauthenticated visitors can browse
+    # the public service registry; writes require auth.
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
@@ -105,12 +156,14 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# Allow the React/Vite frontend (on its dev port and on the proxy at :80)
-# to call this API in development.
+# ---- CORS ------------------------------------------------------------------
+# Frontend dev server lives on a different port — allow it during dev.
+# In production, frontend and backend are the same origin so CORS is moot.
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-# Anthropic / Claude API key for the LLM-powered service suggestion
-# endpoint. When unset, the endpoint falls back to a deterministic
-# heuristic that still produces useful demo output.
+# ---- Anthropic / Claude (optional) -----------------------------------------
+# When ANTHROPIC_API_KEY is set, /api/services/suggest/ uses Claude.
+# When unset (the default), the endpoint falls back to a deterministic
+# heuristic that still produces useful demo suggestions.
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
