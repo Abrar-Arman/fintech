@@ -155,13 +155,13 @@ class ProjectServiceSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     services = ProjectServiceSerializer(source="project_services", many=True, read_only=True)
-    owner_username = serializers.SerializerMethodField()
+    # owner_username = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = (
             "id", "name", "description", "budget_target", "tech_stack",
-            "usage_inputs", "owner", "owner_username", "services",
+            "usage_inputs", "owner", "services",
             "created_at", "updated_at",
         )
         read_only_fields = ("owner",)

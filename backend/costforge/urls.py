@@ -17,6 +17,8 @@ from django.http import JsonResponse, HttpResponse, Http404
 from django.urls import path, include, re_path
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenRefreshView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+
 
 
 def api_root(_request):
@@ -49,6 +51,9 @@ urlpatterns = [
     path("api/", api_root),                                  # GET /api/
     path("api/auth/refresh/", TokenRefreshView.as_view()),   # JWT refresh
     path("api/", include("api.urls")),                       # all REST routes
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
     # Catch-all for the SPA — must be last so it doesn't shadow /api or /admin.
     re_path(r"^(?!api/|admin/|static/).*$", spa_index),
 ]

@@ -29,6 +29,8 @@ import {
   Plus,
   Trash2,
   ArrowRight,
+  Check,
+  Circle,
 } from "lucide-react";
 import {
   Dialog,
@@ -66,6 +68,46 @@ const CATEGORY_LABEL: Record<ServiceCategory, string> = {
   other: "Other",
 };
 
+// Step progress bar — shows where the user is in the project setup flow
+const STEPS = [
+  { label: "Project setup", step: 1 },
+  { label: "Add services", step: 2 },
+  { label: "Pricing variants", step: 3 },
+  { label: "Cost model", step: 4 },
+];
+
+function StepProgressBar({ currentStep }: { currentStep: number }) {
+  return (
+    <div className="flex items-center w-full mb-6 bg-muted/50 border border-border rounded-lg overflow-hidden">
+      {STEPS.map((s, i) => {
+        const done = s.step < currentStep;
+        const active = s.step === currentStep;
+        return (
+          <div
+            key={s.step}
+            className={`flex-1 flex items-center justify-center gap-2 px-2 py-3 text-xs font-medium border-r last:border-r-0 border-border transition-colors
+              ${active ? "bg-background text-foreground" : ""}
+              ${done ? "text-green-600" : ""}
+              ${!active && !done ? "text-muted-foreground" : ""}
+            `}
+          >
+            <span
+              className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-semibold flex-shrink-0
+                ${done ? "bg-green-500 border-green-500 text-white" : ""}
+                ${active ? "border-primary text-primary" : ""}
+                ${!active && !done ? "border-muted-foreground/40 text-muted-foreground" : ""}
+              `}
+            >
+              {done ? <Check className="w-3 h-3" /> : s.step}
+            </span>
+            <span className="hidden sm:inline">{s.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function ProjectServices() {
   const [, params] = useRoute("/projects/:id/services");
   const projectId = params?.id ? Number(params.id) : undefined;
@@ -84,7 +126,7 @@ export default function ProjectServices() {
   const [searchQuery, setSearchQuery] = useState("");
   const [hasRequestedSuggestions, setHasRequestedSuggestions] = useState(false);
 
-  // Fuzzy lookup as the user types in the Search tab.
+  // Fuzzy lookup runs on every keystroke in the Search tab
   const { data: fuzzy } = useFuzzy(searchQuery);
 
   // New Service Modal
@@ -93,7 +135,7 @@ export default function ProjectServices() {
   const [newServiceCategory, setNewServiceCategory] =
     useState<ServiceCategory>("llm");
 
-  // Trigger LLM suggestion (mock heuristic) once we have a project + service list.
+  // Trigger LLM suggestion once we have a project + service list
   useEffect(() => {
     if (
       !project ||
@@ -156,7 +198,7 @@ export default function ProjectServices() {
       });
       setIsNewServiceModalOpen(false);
       setNewServiceName("");
-      // Auto-add to current project so the user can move on.
+      // Auto-add to current project so the user can move on
       await addToProject.mutateAsync({ service_id: created.id });
     } catch (err) {
       toast({
@@ -190,6 +232,9 @@ export default function ProjectServices() {
 
   return (
     <ProjectLayout projectId={params?.id ?? ""}>
+      {/* Step progress bar — always shown at the top of this page */}
+      <StepProgressBar currentStep={2} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
@@ -370,7 +415,7 @@ export default function ProjectServices() {
               </Card>
             </TabsContent>
 
-            {/* SEARCH (fuzzy gate) */}
+            {/* SEARCH — fuzzy search fires on every keystroke via useFuzzy(searchQuery) */}
             <TabsContent value="custom" className="mt-0">
               <Card className="bg-card border-border">
                 <CardContent className="p-6 space-y-6">
@@ -384,6 +429,14 @@ export default function ProjectServices() {
                       data-testid="input-fuzzy-search"
                     />
                   </div>
+
+                  {/* Live search indicator */}
+                  {searchQuery && (
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                      Live search — results update as you type
+                    </div>
+                  )}
 
                   {fuzzy?.matched && (
                     <div
@@ -504,7 +557,7 @@ export default function ProjectServices() {
           </Tabs>
         </div>
 
-        {/* CART */}
+        {/* CART / STACK PANEL */}
         <div className="lg:col-span-1">
           <Card className="sticky top-6 border-border shadow-lg shadow-black/5 flex flex-col h-[calc(100vh-200px)]">
             <CardHeader className="border-b border-border/50 pb-4 bg-muted/20">
@@ -516,6 +569,7 @@ export default function ProjectServices() {
                 Services that will be modeled for costs.
               </CardDescription>
             </CardHeader>
+
             <CardContent className="p-0 flex-1 overflow-y-auto">
               {project.services.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center text-muted-foreground">
@@ -569,14 +623,21 @@ export default function ProjectServices() {
                 </div>
               )}
             </CardContent>
-            <div className="p-4 border-t border-border bg-card mt-auto">
+
+            {/* Footer: always visible, shows hint when empty, activates when ≥1 service selected */}
+            <div className="p-4 border-t border-border bg-card mt-auto space-y-2">
+              {project.services.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Select at least 1 service to continue
+                </p>
+              )}
               <Link href={`/projects/${project.id}/variants`}>
                 <Button
                   className="w-full py-6 group text-md font-medium"
                   disabled={project.services.length === 0}
                   data-testid="button-continue-variants"
                 >
-                  Continue to Pricing Models
+                  Continue to Pricing Variants
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -585,6 +646,7 @@ export default function ProjectServices() {
         </div>
       </div>
 
+      {/* NEW SERVICE MODAL — unchanged */}
       <Dialog
         open={isNewServiceModalOpen}
         onOpenChange={setIsNewServiceModalOpen}

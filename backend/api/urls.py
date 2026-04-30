@@ -21,7 +21,7 @@ router.register(r"projects", views.ProjectViewSet, basename="project")
 urlpatterns = [
     # JWT auth
     path("auth/register/", views.RegisterView.as_view(), name="register"),
-    path("auth/login/", views.LoginView.as_view(), name="login"),
+   path("auth/login/", views.LoginView.as_view(), name="login"),
     path("auth/me/", views.MeView.as_view(), name="me"),
     # Pricing model schema (used by the frontend to render variant forms)
     path("pricing-models/", views.pricing_models_view, name="pricing_models"),

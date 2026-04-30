@@ -85,7 +85,7 @@ class PricingVariant(models.Model):
     usage_inputs = models.JSONField(default=dict)
 
     is_official = models.BooleanField(default=False)
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True,null=True)
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -146,7 +146,8 @@ class Project(models.Model):
     """A user's AI-agent project that we are pricing."""
 
     owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="projects"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="projects",null=True,
+    blank=True,
     )
     name = models.CharField(max_length=140)
     description = models.TextField(blank=True)

@@ -1,20 +1,4 @@
-"""
-Django settings for the CostForge backend.
 
-This is a single Django app (`api`) that exposes a REST API consumed
-by the React frontend in ../frontend.
-
-In development:
-    - Django runs on port 8000 and serves /api/* only.
-    - The React dev server (Vite) runs on port 5000 and proxies /api/*
-      to this server (see frontend/vite.config.ts).
-
-In production:
-    - You build the React app once (`cd frontend && npm run build`).
-    - Django serves /api/* AND the built React bundle from frontend/dist
-      via WhiteNoise — a single process, single port. That makes
-      deployment dead simple (no separate static host required).
-"""
 from pathlib import Path
 from datetime import timedelta
 import os
@@ -56,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "corsheaders",
     "api",
+    'drf_spectacular',
 ]
 
 # ---- Middleware ------------------------------------------------------------
@@ -135,19 +120,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---- Django REST Framework -------------------------------------------------
 REST_FRAMEWORK = {
+     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     # JWT for the React client; SessionAuthentication kept around so the
     # built-in /admin/ login still works.
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        "rest_framework.authentication.SessionAuthentication",
-    ),
+    # "DEFAULT_AUTHENTICATION_CLASSES": (
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    #     "rest_framework.authentication.SessionAuthentication",
+    # ),
     # Read endpoints (GET) are open so unauthenticated visitors can browse
     # the public service registry; writes require auth.
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-    ),
+    # "DEFAULT_PERMISSION_CLASSES": (
+    #     "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    # ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
+
 }
 
 SIMPLE_JWT = {
@@ -167,3 +154,13 @@ CORS_ALLOW_CREDENTIALS = True
 # When unset (the default), the endpoint falls back to a deterministic
 # heuristic that still produces useful demo suggestions.
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'My API',
+    'DESCRIPTION': 'API documentation',
+    'VERSION': '1.0.0',
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),  
+}

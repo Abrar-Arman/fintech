@@ -18,6 +18,9 @@ import { ensureDemoUser } from "@/lib/api";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Registry from "@/pages/registry";
+import  ServiceDetail  from "@/pages/ServiceDetail";
+import PricingModels from "@/pages/PricingModels";
+
 import NewProject from "@/pages/projects/new";
 import ProjectServices from "@/pages/projects/[id]/services";
 import ProjectVariants from "@/pages/projects/[id]/variants";
@@ -41,7 +44,9 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/registry" component={Registry} />
+      <Route path="/registry/:id" component={ServiceDetail} />
       <Route path="/projects/new" component={NewProject} />
+      <Route path="/pricing-models" component={PricingModels} />
       <Route path="/projects/:id/services" component={ProjectServices} />
       <Route path="/projects/:id/variants" component={ProjectVariants} />
       <Route path="/projects/:id/usage" component={ProjectUsage} />
@@ -112,11 +117,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthBootstrap>
+        {/* <AuthBootstrap> */}
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
           </WouterRouter>
-        </AuthBootstrap>
+        {/* </AuthBootstrap> */}
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

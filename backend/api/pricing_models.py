@@ -1,8 +1,10 @@
 """
 Definitions and human-readable explanations for each of the six
-supported pricing models. Returned by GET /api/pricing-models/ so the
-frontend can render the right form fields and tooltip copy without
-hard-coding any model knowledge.
+supported pricing models. We provide a flexible pricing-model system that defines how different billing
+ strategies are described and used in a structured way. Instead of hardcoding forms or logic 
+   each pricing type, each model is described using a schema that includes a list of input fields.
+     Each field represents a specific value needed to calculate pricing, such as token costs,
+     number of seats, requests, or usage units.
 """
 
 PRICING_MODELS = [
@@ -18,9 +20,9 @@ PRICING_MODELS = [
             "with the size of the prompt and the response."
         ),
         "fields": [
-            {"name": "price_per_1k_input_tokens", "type": "decimal", "required": True,
+            {"name": "input_price_per_1k", "type": "decimal", "required": True,
              "help": "USD charged per 1,000 input tokens."},
-            {"name": "price_per_1k_output_tokens", "type": "decimal", "required": True,
+            {"name": "output_price_per_1k", "type": "decimal", "required": True,
              "help": "USD charged per 1,000 output tokens."},
             {"name": "context_window", "type": "integer", "required": False,
              "help": "Maximum tokens per request (informational)."},

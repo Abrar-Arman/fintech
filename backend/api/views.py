@@ -92,8 +92,6 @@ def pricing_models_view(_request):
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
     def get_serializer_class(self):
         if self.action == "retrieve":
             return ServiceDetailSerializer
@@ -146,7 +144,6 @@ class ServiceViewSet(viewsets.ModelViewSet):
 class PricingVariantViewSet(viewsets.ModelViewSet):
     queryset = PricingVariant.objects.all()
     serializer_class = PricingVariantSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -160,7 +157,7 @@ class PricingVariantViewSet(viewsets.ModelViewSet):
             created_by=self.request.user if self.request.user.is_authenticated else None
         )
 
-    @action(detail=True, methods=["post"], permission_classes=[IsAuthenticated])
+    @action(detail=True, methods=["post"])
     def vote(self, request, pk=None):
         """Toggle / flip the requesting user's vote on this variant.
 
@@ -192,16 +189,18 @@ class PricingVariantViewSet(viewsets.ModelViewSet):
 
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return Project.objects.filter(owner=self.request.user).prefetch_related(
+        return Project.objects.all().prefetch_related(
             "project_services__service",
             "project_services__variant",
         )
-
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+            serializer.save()
+
+
 
     @action(detail=True, methods=["post"])
     def add_service(self, request, pk=None):
