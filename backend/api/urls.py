@@ -1,5 +1,5 @@
 """
-URL routes for the CostForge REST API.
+URL routes for the PricePilot Ai REST API.
 
 These are mounted under /api/ by costforge/urls.py, so the final paths
 are /api/auth/login/, /api/services/, /api/projects/<id>/calculate/, etc.

@@ -24,7 +24,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 def api_root(_request):
     """GET /api/ — tiny welcome JSON. Useful as a healthcheck too."""
     return JsonResponse({
-        "name": "CostForge API",
+        "name": "PricePilot Ai API",
         "version": "1.0.0",
         "endpoints": "/api/",
     })
@@ -36,7 +36,7 @@ def spa_index(_request):
     if not index_file.exists():
         # Friendly developer message when the React build hasn't been run.
         return HttpResponse(
-            "<h1>CostForge backend is running</h1>"
+            "<h1>PricePilot Ai backend is running</h1>"
             "<p>The frontend has not been built yet. Run "
             "<code>cd frontend &amp;&amp; npm install &amp;&amp; npm run build</code>"
             " to enable the SPA, or visit <a href='/api/'>/api/</a> for the REST API.</p>",

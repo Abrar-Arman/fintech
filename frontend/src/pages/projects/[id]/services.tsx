@@ -163,15 +163,12 @@ export default function ProjectServices() {
     const isSelected = selectedServiceIds.has(serviceId);
     try {
       if (isSelected) {
-        await fetch(
-          `/api/projects/${project.id}/services/${serviceId}/`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("costforge_jwt_access") ?? ""}`,
-            },
+        await fetch(`/api/projects/${project.id}/services/${serviceId}/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("pricepilot_jwt_access") ?? ""}`,
           },
-        );
+        });
         qc.invalidateQueries({ queryKey: ["project", project.id] });
       } else {
         await addToProject.mutateAsync({ service_id: serviceId });
@@ -247,7 +244,11 @@ export default function ProjectServices() {
             </Badge>
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/50 border border-border p-1 rounded-lg">
               <TabsTrigger
                 value="suggested"
@@ -337,18 +338,19 @@ export default function ProjectServices() {
                         ))}
                       </div>
 
-                      {suggest.data?.unmatched && suggest.data.unmatched.length > 0 && (
-                        <div className="mt-6 text-xs text-muted-foreground bg-muted/30 p-3 rounded-md border border-dashed border-border">
-                          <p className="font-medium text-foreground mb-1">
-                            Unmatched suggestions
-                          </p>
-                          {suggest.data.unmatched.map((u) => (
-                            <p key={u.name}>
-                              • {u.name} — {u.reason}
+                      {suggest.data?.unmatched &&
+                        suggest.data.unmatched.length > 0 && (
+                          <div className="mt-6 text-xs text-muted-foreground bg-muted/30 p-3 rounded-md border border-dashed border-border">
+                            <p className="font-medium text-foreground mb-1">
+                              Unmatched suggestions
                             </p>
-                          ))}
-                        </div>
-                      )}
+                            {suggest.data.unmatched.map((u) => (
+                              <p key={u.name}>
+                                • {u.name} — {u.reason}
+                              </p>
+                            ))}
+                          </div>
+                        )}
                     </motion.div>
                   )}
                 </CardContent>

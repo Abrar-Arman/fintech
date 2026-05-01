@@ -203,7 +203,7 @@ SERVICES = [
 
 
 class Command(BaseCommand):
-    help = "Seed CostForge services + pricing variants."
+    help = "Seed PricePilot Ai services + pricing variants."
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -212,9 +212,9 @@ class Command(BaseCommand):
         # after any DB reset.
         demo_user, _ = User.objects.get_or_create(
             username="demo",
-            defaults={"email": "demo@costforge.dev"},
+            defaults={"email": "demo@pricepilot.ai"},
         )
-        demo_user.set_password("costforge-demo-2026")
+        demo_user.set_password("pricepilot-demo-2026")
         demo_user.save()
 
         created_services = 0

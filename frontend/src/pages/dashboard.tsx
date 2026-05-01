@@ -435,8 +435,17 @@ export default function Dashboard() {
         }
       `}</style>
 
-      <div className="dash-root" style={{ padding: 24, maxWidth: 1280, margin: "0 auto", display: "flex", flexDirection: "column", gap: 32 }}>
-
+      <div
+        className="dash-root"
+        style={{
+          padding: 24,
+          maxWidth: 1280,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: 32,
+        }}
+      >
         {/* HERO */}
         <motion.div
           initial={{ opacity: 0, y: -16 }}
@@ -444,7 +453,7 @@ export default function Dashboard() {
           transition={{ duration: 0.5 }}
           className="hero-banner"
         >
-          <h1 className="hero-title">Welcome back to CostForge</h1>
+          <h1 className="hero-title">Welcome back to PricePilot Ai</h1>
           <p className="hero-sub">
             Predict the real operational cost of every project before you ship.
             Compare pricing models, run scenarios, and stay under budget.
@@ -470,13 +479,36 @@ export default function Dashboard() {
           </p>
           <div className="stats-grid">
             {[
-              { label: "Projects", value: stats.projects, icon: Target, bg: "#eff6ff", color: "#2563eb" },
-              { label: "Services", sublabel: "Registry", value: stats.services, icon: Database, bg: "#f0fdf4", color: "#16a34a" },
-              { label: "Pricing Variants", sublabel: "Tracked", value: stats.variants, icon: Activity, bg: "#fefce8", color: "#ca8a04" },
+              {
+                label: "Projects",
+                value: stats.projects,
+                icon: Target,
+                bg: "#eff6ff",
+                color: "#2563eb",
+              },
+              {
+                label: "Services",
+                sublabel: "Registry",
+                value: stats.services,
+                icon: Database,
+                bg: "#f0fdf4",
+                color: "#16a34a",
+              },
+              {
+                label: "Pricing Variants",
+                sublabel: "Tracked",
+                value: stats.variants,
+                icon: Activity,
+                bg: "#fefce8",
+                color: "#ca8a04",
+              },
               {
                 label: "Community Votes",
                 sublabel: "Trust",
-                value: stats.topServices.reduce((s: number, x: any) => s + x.project_count, 0),
+                value: stats.topServices.reduce(
+                  (s: number, x: any) => s + x.project_count,
+                  0,
+                ),
                 icon: Users,
                 bg: "#fdf4ff",
                 color: "#9333ea",
@@ -493,11 +525,20 @@ export default function Dashboard() {
                   <Icon size={16} color={color} />
                 </div>
                 <div className="stat-card-value">{value.toLocaleString()}</div>
-                <div className="stat-card-label" style={{ marginTop: 6 }}>{label}</div>
+                <div className="stat-card-label" style={{ marginTop: 6 }}>
+                  {label}
+                </div>
                 {sublabel && (
-                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{sublabel}</div>
+                  <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                    {sublabel}
+                  </div>
                 )}
-                <div className="stat-card-bar" style={{ background: `linear-gradient(90deg, ${color}88, ${color}33)` }} />
+                <div
+                  className="stat-card-bar"
+                  style={{
+                    background: `linear-gradient(90deg, ${color}88, ${color}33)`,
+                  }}
+                />
               </motion.div>
             ))}
           </div>
@@ -505,7 +546,6 @@ export default function Dashboard() {
 
         {/* TWO-COLUMN: Projects + Services */}
         <div className="two-col">
-
           {/* LEFT — Projects */}
           <div className="projects-col">
             <div className="projects-col-header">
@@ -513,24 +553,45 @@ export default function Dashboard() {
                 <Target size={18} color="#2563eb" /> Your Projects
               </p>
               <Link href="/projects/new">
-                <a className="section-link"><Plus size={14} /> New</a>
+                <a className="section-link">
+                  <Plus size={14} /> New
+                </a>
               </Link>
             </div>
 
             {projectsLoading ? (
-              <div style={{ padding: "40px 20px", textAlign: "center", color: "#94a3b8", fontSize: 14 }}>
+              <div
+                style={{
+                  padding: "40px 20px",
+                  textAlign: "center",
+                  color: "#94a3b8",
+                  fontSize: 14,
+                }}
+              >
                 Loading projects…
               </div>
             ) : projects.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon"><Target size={24} /></div>
-                <p style={{ fontFamily: "'Syne',sans-serif", fontWeight: 700, fontSize: 16, color: "#0f172a", marginBottom: 6 }}>
+                <div className="empty-icon">
+                  <Target size={24} />
+                </div>
+                <p
+                  style={{
+                    fontFamily: "'Syne',sans-serif",
+                    fontWeight: 700,
+                    fontSize: 16,
+                    color: "#0f172a",
+                    marginBottom: 6,
+                  }}
+                >
                   No projects yet
                 </p>
                 <p style={{ fontSize: 13, color: "#94a3b8", marginBottom: 20 }}>
                   Create a project to start predicting costs.
                 </p>
-                <Link href="/projects/new"><a className="btn-create">Create Project</a></Link>
+                <Link href="/projects/new">
+                  <a className="btn-create">Create Project</a>
+                </Link>
               </div>
             ) : (
               projects.map((project, idx) => {
@@ -545,30 +606,94 @@ export default function Dashboard() {
                     transition={{ delay: idx * 0.08 }}
                   >
                     <Link href={`/projects/${project.id}/services`}>
-                      <a className="project-card" data-testid={`card-project-${project.id}`}>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+                      <a
+                        className="project-card"
+                        data-testid={`card-project-${project.id}`}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            gap: 16,
+                          }}
+                        >
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div className="project-card-name">{project.name}</div>
-                            <div style={{ fontSize: 13, color: "#64748b", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                              {project.description || <span style={{ color: "#cbd5e1" }}>No description</span>}
+                            <div className="project-card-name">
+                              {project.name}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 13,
+                                color: "#64748b",
+                                marginTop: 4,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {project.description || (
+                                <span style={{ color: "#cbd5e1" }}>
+                                  No description
+                                </span>
+                              )}
                             </div>
                             <div className="project-meta">
-                              <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <Database size={11} /> {project.services.length} services
+                              <span
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <Database size={11} /> {project.services.length}{" "}
+                                services
                               </span>
-                              <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                                <Clock size={11} /> {formatDistanceToNow(new Date(project.created_at))} ago
+                              <span
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 4,
+                                }}
+                              >
+                                <Clock size={11} />{" "}
+                                {formatDistanceToNow(
+                                  new Date(project.created_at),
+                                )}{" "}
+                                ago
                               </span>
                             </div>
                           </div>
 
-                          <div style={{ display: "flex", alignItems: "center", gap: 20, borderLeft: "1px solid #e2e8f0", paddingLeft: 20, flexShrink: 0 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 20,
+                              borderLeft: "1px solid #e2e8f0",
+                              paddingLeft: 20,
+                              flexShrink: 0,
+                            }}
+                          >
                             <div style={{ textAlign: "right" }}>
-                              <div className="project-cost-label">Est. Cost</div>
-                              <div className={`project-cost${isOver ? " over" : ""}`}>
-                                ${totalCost.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                              <div className="project-cost-label">
+                                Est. Cost
                               </div>
-                              <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
+                              <div
+                                className={`project-cost${isOver ? " over" : ""}`}
+                              >
+                                $
+                                {totalCost.toLocaleString(undefined, {
+                                  maximumFractionDigits: 0,
+                                })}
+                              </div>
+                              <div
+                                style={{
+                                  fontSize: 11,
+                                  color: "#94a3b8",
+                                  marginTop: 2,
+                                }}
+                              >
                                 Target: ${target.toLocaleString()}
                               </div>
                             </div>
@@ -590,40 +715,62 @@ export default function Dashboard() {
             </p>
             <div className="service-list-card">
               {stats.topServices.length === 0 ? (
-                <div style={{ padding: "32px 20px", textAlign: "center", fontSize: 13, color: "#94a3b8" }}>
+                <div
+                  style={{
+                    padding: "32px 20px",
+                    textAlign: "center",
+                    fontSize: 13,
+                    color: "#94a3b8",
+                  }}
+                >
                   No services in the registry yet.
                 </div>
               ) : (
-                stats.topServices.map(({ service, project_count }: any, idx: number) => (
-                  <div key={service.id} className="service-item">
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                stats.topServices.map(
+                  ({ service, project_count }: any, idx: number) => (
+                    <div key={service.id} className="service-item">
                       <div
-                        className="service-rank"
-                        style={{ background: `${service.icon_color}18`, color: service.icon_color }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
                       >
-                        {idx + 1}
+                        <div
+                          className="service-rank"
+                          style={{
+                            background: `${service.icon_color}18`,
+                            color: service.icon_color,
+                          }}
+                        >
+                          {idx + 1}
+                        </div>
+                        <div>
+                          <div className="service-name">{service.name}</div>
+                          <div className="service-cat">
+                            {service.category.replace("_", " ")}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="service-name">{service.name}</div>
-                        <div className="service-cat">{service.category.replace("_", " ")}</div>
-                      </div>
+                      <span className="uses-badge">
+                        {project_count} {project_count === 1 ? "use" : "uses"}
+                      </span>
                     </div>
-                    <span className="uses-badge">
-                      {project_count} {project_count === 1 ? "use" : "uses"}
-                    </span>
-                  </div>
-                ))
+                  ),
+                )
               )}
               <div className="view-all-footer">
                 <Link href="/registry">
-                  <a className="section-link" style={{ justifyContent: "center" }}>
+                  <a
+                    className="section-link"
+                    style={{ justifyContent: "center" }}
+                  >
                     View full registry <ArrowRight size={13} />
                   </a>
                 </Link>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </AppLayout>

@@ -1,9 +1,9 @@
 {
-  "name": "costforge-frontend",
+  "name": "pricepilot-ai-frontend",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "CostForge React + Vite frontend. Talks to the Django REST API in ../backend.",
+  "description": "PricePilot Ai React + Vite frontend. Talks to the Django REST API in ../backend.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

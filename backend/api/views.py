@@ -1,5 +1,5 @@
 """
-HTTP endpoints for the CostForge REST API.
+HTTP endpoints for the PricePilot Ai REST API.
 
 Layout:
     - RegisterView / LoginView / MeView      → JWT auth

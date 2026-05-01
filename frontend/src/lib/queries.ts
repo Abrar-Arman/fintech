@@ -1,5 +1,5 @@
 /**
- * React Query hooks for the CostForge backend.
+ * React Query hooks for the PricePilot Ai backend.
  *
  * Components must NEVER call the api.ts functions directly — go through
  * these hooks so cache invalidation stays consistent.
@@ -233,7 +233,10 @@ export function useDashboardStats() {
         .slice()
         .sort((a, b) => (b.project_count ?? 0) - (a.project_count ?? 0))
         .slice(0, 6)
-        .map((service) => ({ service, project_count: service.project_count ?? 0 })),
+        .map((service) => ({
+          service,
+          project_count: service.project_count ?? 0,
+        })),
     } as DashboardStats,
   };
 }

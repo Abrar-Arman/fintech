@@ -18,7 +18,7 @@ import { ensureDemoUser } from "@/lib/api";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Registry from "@/pages/registry";
-import  ServiceDetail  from "@/pages/ServiceDetail";
+import ServiceDetail from "@/pages/ServiceDetail";
 import PricingModels from "@/pages/PricingModels";
 
 import NewProject from "@/pages/projects/new";
@@ -76,7 +76,7 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
         if (!cancelled) {
           setError(
             err?.message ||
-              "Could not reach the CostForge API. Make sure the Django server is running on port 8000.",
+              "Could not reach the PricePilot Ai API. Make sure the Django server is running on port 8000.",
           );
         }
       });
@@ -92,7 +92,8 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
           <h1 className="text-xl font-semibold">Backend unavailable</h1>
           <p className="text-sm text-muted-foreground">{error}</p>
           <p className="text-xs text-muted-foreground">
-            Start the workflow named <code>CostForge Django API</code> and refresh.
+            Start the workflow named <code>PricePilot Ai Django API</code> and
+            refresh.
           </p>
         </div>
       </div>
@@ -104,7 +105,7 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
           <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm">Connecting to CostForge API…</p>
+          <p className="text-sm">Connecting to PricePilot Ai API…</p>
         </div>
       </div>
     );
@@ -118,9 +119,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         {/* <AuthBootstrap> */}
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
         {/* </AuthBootstrap> */}
         <Toaster />
       </TooltipProvider>

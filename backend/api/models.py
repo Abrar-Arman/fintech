@@ -1,5 +1,5 @@
 """
-CostForge data model.
+PricePilot Ai data model.
 
 The schema is intentionally flexible: every PricingVariant stores its
 model-specific fields inside a JSON column (`usage_inputs`) so we can

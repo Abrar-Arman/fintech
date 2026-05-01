@@ -1,5 +1,5 @@
 /**
- * Vite configuration for the CostForge React frontend.
+ * Vite configuration for the PricePilot Ai React frontend.
  *
  * In development:
  *   - The dev server runs on PORT (default 5000) with HMR.

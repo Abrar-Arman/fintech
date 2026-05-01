@@ -18,7 +18,7 @@ from django.conf import settings
 from .fuzzy import fuzzy_match
 
 
-PROMPT_TEMPLATE = """You are CostForge, a financial estimator for AI agent systems.
+PROMPT_TEMPLATE = """You are PricePilot Ai, a financial estimator for AI agent systems.
 
 A freelancer is pricing this project:
 

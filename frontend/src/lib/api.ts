@@ -16,9 +16,9 @@
 
 // localStorage keys — kept short and namespaced so they don't clash
 // with anything else on the same domain.
-const TOKEN_KEY = "costforge_jwt_access";
-const REFRESH_KEY = "costforge_jwt_refresh";
-const USER_KEY = "costforge_user";
+const TOKEN_KEY = "pricepilot_jwt_access";
+const REFRESH_KEY = "pricepilot_jwt_refresh";
+const USER_KEY = "pricepilot_user";
 
 // All endpoints live under /api on the Django side. We never hard-code
 // localhost:8000 — the Vite proxy / Django static serve handles routing.
@@ -365,9 +365,13 @@ export async function ensureDemoUser(): Promise<User> {
     }
   }
   const username = "demo";
-  const password = "costforge-demo-2026";
+  const password = "pricepilot-demo-2026";
   try {
-    const auth = await authApi.register(username, password, "demo@costforge.dev");
+    const auth = await authApi.register(
+      username,
+      password,
+      "demo@pricepilot.ai",
+    );
     tokenStore.set(auth);
     return auth.user;
   } catch (err) {
@@ -383,21 +387,34 @@ export async function ensureDemoUser(): Promise<User> {
 // ---- Pricing models --------------------------------------------------------
 
 export const pricingModelsApi = {
-  list: () => request<{ models: PricingModelDef[] }>("/pricing-models/", { auth: false }),
+  list: () =>
+    request<{ models: PricingModelDef[] }>("/pricing-models/", { auth: false }),
 };
 
 // ---- Services --------------------------------------------------------------
 
 export const servicesApi = {
   list: (params?: { category?: string; search?: string; status?: string }) =>
-    request<PaginatedResponse<Service>>("/services/", { auth: false, query: params }),
+    request<PaginatedResponse<Service>>("/services/", {
+      auth: false,
+      query: params,
+    }),
   detail: (id: number) =>
     request<ServiceDetail>(`/services/${id}/`, { auth: false }),
-  create: (data: { name: string; category: ServiceCategory; description?: string; official_url?: string; icon_color?: string }) =>
-    request<Service>("/services/", { method: "POST", body: data }),
+  create: (data: {
+    name: string;
+    category: ServiceCategory;
+    description?: string;
+    official_url?: string;
+    icon_color?: string;
+  }) => request<Service>("/services/", { method: "POST", body: data }),
   fuzzy: (q: string) =>
     request<FuzzyResult>("/services/fuzzy/", { auth: false, query: { q } }),
-  suggest: (payload: { name: string; description: string; tech_stack: string[] }) =>
+  suggest: (payload: {
+    name: string;
+    description: string;
+    tech_stack: string[];
+  }) =>
     request<SuggestResult>("/services/suggest/", {
       method: "POST",
       auth: false,

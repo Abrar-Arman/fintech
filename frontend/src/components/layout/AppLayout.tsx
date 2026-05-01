@@ -6,7 +6,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
 
   return (
-    <div className="min-h-[100dvh] flex text-foreground" style={{ background: "#f8fafc" }}>
+    <div
+      className="min-h-[100dvh] flex text-foreground"
+      style={{ background: "#f8fafc" }}
+    >
       {/* Sidebar */}
       <aside
         className="w-64 shrink-0 hidden md:flex flex-col"
@@ -17,20 +20,33 @@ export function AppLayout({ children }: { children: ReactNode }) {
         }}
       >
         {/* Logo */}
-        <div className="px-6 py-5" style={{ borderBottom: "1px solid #f1f5f9" }}>
+        <div
+          className="px-6 py-5"
+          style={{ borderBottom: "1px solid #f1f5f9" }}
+        >
           <Link href="/">
             <div className="flex items-center gap-2.5 cursor-pointer">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: "#2563eb" }}
+                className="flex items-center justify-center font-bold"
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "14px",
+                  background: "#EFF6FF",
+                  color: "#3B82F6",
+                  fontSize: "28px",
+                  fontFamily: "'Inter', 'Poppins', sans-serif",
+                  fontWeight: "700",
+                  letterSpacing: "-0.5px",
+                }}
               >
-                <Database className="w-4 h-4 text-white" />
+                P
               </div>
               <span
                 className="font-bold text-lg tracking-tight"
                 style={{ color: "#0f172a", fontFamily: "'Syne', sans-serif" }}
               >
-                CostForge
+                PricePilot Ai
               </span>
             </div>
           </Link>
@@ -50,7 +66,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             icon={<Database className="w-4 h-4" />}
             label="Service Registry"
           />
-           <NavItem
+          <NavItem
             href="/pricing-models"
             active={location === "/pricing-models"}
             icon={<Database className="w-4 h-4" />}
@@ -59,7 +75,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* User footer — pinned at bottom via flex-col */}
-        <div className="px-4 pb-5 pt-2" style={{ borderTop: "1px solid #f1f5f9" }}>
+        <div
+          className="px-4 pb-5 pt-2"
+          style={{ borderTop: "1px solid #f1f5f9" }}
+        >
           <div
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl"
             style={{
@@ -74,7 +93,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
               CF
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold truncate" style={{ color: "#0f172a" }}>
+              <span
+                className="text-sm font-semibold truncate"
+                style={{ color: "#0f172a" }}
+              >
                 Demo User
               </span>
               <span className="text-xs" style={{ color: "#94a3b8" }}>
@@ -98,13 +120,26 @@ export function AppLayout({ children }: { children: ReactNode }) {
         >
           <div className="flex items-center gap-2">
             <div
-              className="w-6 h-6 rounded-md flex items-center justify-center"
-              style={{ background: "#2563eb" }}
+              className="flex items-center justify-center font-bold"
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "10px",
+                background: "#EFF6FF",
+                color: "#3B82F6",
+                fontSize: "20px",
+                fontFamily: "'Inter', 'Poppins', sans-serif",
+                fontWeight: "700",
+                letterSpacing: "-0.5px",
+              }}
             >
-              <Database className="w-3.5 h-3.5 text-white" />
+              P
             </div>
-            <span className="font-bold text-base tracking-tight" style={{ color: "#0f172a" }}>
-              CostForge
+            <span
+              className="font-bold text-base tracking-tight"
+              style={{ color: "#0f172a" }}
+            >
+              PricePilot Ai
             </span>
           </div>
         </header>
@@ -145,7 +180,8 @@ function NavItem({
         }}
         onMouseLeave={(e) => {
           if (!active) {
-            (e.currentTarget as HTMLDivElement).style.background = "transparent";
+            (e.currentTarget as HTMLDivElement).style.background =
+              "transparent";
             (e.currentTarget as HTMLDivElement).style.color = "#64748b";
           }
         }}
