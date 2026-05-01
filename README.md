@@ -1,27 +1,78 @@
 # PricePilot Ai
 
-PricePilot Ai is a FinTech + AI cost prediction platform for freelancers building AI agents. Pick the LLMs / vector DBs / hosts you need, set your usage assumptions, and see what your monthly bill is going to look like — before you ship.
+**AI-powered cost estimation platform for modern software projects.**
 
-This is a classic **React + Django REST** application.
+PricePilot Ai helps developers and freelancers understand the **real operational costs** of their projects before shipping. Simply:
+
+1. **Select or describe your tech stack** — Choose from 150+ services (LLMs, vector DBs, hosting, storage, etc.) or use AI to auto-detect them from your project description.
+2. **Input your usage assumptions** — How many active users? Requests per user? Tokens per request? Storage and bandwidth needs?
+3. **Get instant cost predictions** — Per-service breakdown + three risk scenarios (Conservative 50% / Expected 100% / Aggressive 200%) to show budget headroom.
+4. **Make data-driven decisions** — Understand cost implications before committing to a tech stack.
+
+Built with **React + Django REST Framework**.
 
 ```
-costforge/
-├── backend/         Django REST Framework API (Python)
-│   ├── api/             Models, serializers, views, URLs
-│   ├── costforge/       Django project settings & root URLs
+fintech/
+├── backend/              Django REST Framework API (Python 3.11+)
+│   ├── api/                 Models, views, serializers, LLM integration
+│   │   ├── views.py         API endpoints (services, projects, auth)
+│   │   ├── calculator.py    Cost calculation engine (6 pricing models)
+│   │   ├── llm.py           Claude-powered service suggestions
+│   │   ├── fuzzy.py         Fuzzy matching for service discovery
+│   │   ├── models.py        Database models (User, Service, Project, etc.)
+│   │   └── pricing_models.py Pricing model definitions
+│   ├── costforge/           Django settings & root URLs
 │   ├── manage.py
-│   └── requirements.txt
-└── frontend/        React + Vite SPA (TypeScript)
-    ├── src/
-    │   ├── components/  UI components (shadcn/ui based)
-    │   ├── hooks/       Reusable React hooks
-    │   ├── lib/         API client (api.ts) + React Query hooks (queries.ts)
-    │   └── pages/       Page components — one per route
-    ├── public/
-    ├── index.html
-    ├── package.json
-    └── vite.config.ts
+│   ├── requirements.txt
+│   └── db.sqlite3           SQLite database
+├── frontend/             React + TypeScript + Vite (Node 20+)
+│   ├── src/
+│   │   ├── components/      UI components (shadcn/ui)
+│   │   ├── pages/           Route pages (dashboard, projects, services)
+│   │   ├── lib/
+│   │   │   ├── api.ts       Typed API client with JWT auth
+│   │   │   ├── calculator.ts Client-side cost calculation mirror
+│   │   │   └── queries.ts    React Query hooks for data fetching
+│   │   ├── hooks/           Custom React hooks
+│   │   └── App.tsx          Root component
+│   ├── public/              Static assets
+│   ├── vite.config.ts
+│   ├── tsconfig.json
+│   ├── package.json
+│   └── index.html
+└── artifacts/            Demo artifacts (frontend preview)
 ```
+
+---
+
+## Tech Stack
+
+### Backend (Python)
+
+- **Django 5.0.6** — Web framework with ORM
+- **Django REST Framework** — REST API toolkit with authentication
+- **Anthropic Claude API** — LLM for service suggestion and analysis
+- **SQLite** — Lightweight database (production: PostgreSQL recommended)
+- **Python Decimal** — Precise financial calculations
+
+### Frontend (TypeScript)
+
+- **React 18** — UI library
+- **TypeScript** — Type safety
+- **Vite** — Fast build tool and dev server
+- **shadcn/ui** — Headless UI component library (Radix + Tailwind)
+- **TailwindCSS** — Utility-first styling
+- **React Query (TanStack Query)** — Server state management
+- **Wouter** — Lightweight client-side router
+- **Lucide React** — Icon library
+- **React Hook Form** — Form state management
+
+### DevOps & Tools
+
+- **Vite** — Frontend dev server with HMR and proxy
+- **JWT (JSON Web Tokens)** — Stateless authentication
+- **SQLite/Django ORM** — Database layer
+- **Git** — Version control
 
 ---
 
@@ -90,16 +141,67 @@ That's it — visit `http://localhost:8000` and Django will serve both the React
 - JWT access + refresh tokens are stored in `localStorage` (`pricepilot_jwt_access`, `pricepilot_jwt_refresh`).
 - Every request goes through `frontend/src/lib/api.ts`, which transparently refreshes the access token on 401.
 
-### Cost calculation
+### How Cost Calculation Works
 
-- The authoritative cost engine lives in `backend/api/calculator.py` and is exposed via `POST /api/projects/<id>/calculate/`.
-- A client-side mirror in `frontend/src/lib/calculator.ts` provides instant updates while the user drags the usage sliders, so we don't hit the backend for every keystroke.
-- Both implementations support the six pricing model types: `per_token`, `per_seat`, `per_request`, `flat_rate`, `usage_based`, `tiered`.
+1. **Service Selection** — User selects services (OpenAI, Pinecone, Vercel, AWS, Stripe, etc.) via UI or AI suggestion.
 
-### LLM service suggestion (optional)
+2. **Usage Input** — User provides expected metrics:
+   - `active_users`: Number of concurrent/monthly active users
+   - `requests_per_user`: API calls per user
+   - `tokens_per_request`: Tokens consumed per request (for LLMs)
+   - `storage_gb`, `bandwidth_gb`, `compute_hours`: Infrastructure metrics
 
-- `POST /api/services/suggest/` returns AI-suggested services for a project description.
-- When `ANTHROPIC_API_KEY` is set in the environment, the endpoint calls Claude. When it's not, a deterministic heuristic fallback is used — perfect for demos and tests.
+3. **Pricing Model** — Each service variant has a pricing model:
+   - **per_token**: LLM APIs (OpenAI, Claude, etc.) — `price * (tokens / 1000)`
+   - **per_seat**: SaaS tools (Slack, Notion, etc.) — `price_per_seat * users`
+   - **per_request**: Some APIs — `price * requests`
+   - **flat_rate**: Subscription fees — fixed monthly cost
+   - **usage_based**: Storage/bandwidth — `price_per_unit * units`
+   - **tiered**: Volume-based discounts — stepped pricing
+
+4. **Cost Breakdown** — Server calculates per-service cost:
+
+   ```
+   Example: OpenAI GPT-4o at $0.03/1k input + $0.06/1k output tokens
+   100 users × 50 requests/user × 500 tokens/request = 2.5M tokens/month
+   Cost = (2.5M / 1000) × $0.045 (avg of in+out) = $112.50/month
+   ```
+
+5. **Scenarios** — Three budget scenarios show cost range:
+   - **Conservative (50% usage)**: Optimistic projection, low demand
+   - **Expected (100% usage)**: Your baseline estimates
+   - **Aggressive (200% usage)**: Worst-case, high demand spike
+
+6. **Headroom Analysis** — Shows how much of your budget is used:
+   ```
+   Budget: $5000/month
+   Expected Cost: $3200/month
+   Headroom: $1800 (36% remaining)
+   ```
+
+### LLM Service Suggestion (AI-Powered Discovery)
+
+- **Endpoint**: `POST /api/services/suggest/`
+- **Input**: Project name, description, tech stack
+- **Process**:
+  1. Sends to Claude with system prompt: "You are PricePilot Ai, suggest paid services this project needs"
+  2. Claude returns JSON list of services with reasons
+  3. Services are fuzzy-matched against our database for accuracy
+  4. Returns: matched services + suggestions + unmatched names
+- **Fallback**: If `ANTHROPIC_API_KEY` is missing, uses keyword-based heuristic (works offline)
+
+**Example Response**:
+
+```json
+{
+  "matched": [
+    {"service_id": 1, "name": "OpenAI GPT-4o", "category": "llm", "reason": "AI agent needs LLM"}
+  ],
+  "suggestions": [{"query": "Claude", "options": [...]}],
+  "unmatched": [{"name": "Custom LLM", "reason": "Not in our database"}],
+  "source": "anthropic"
+}
+```
 
 ---
 
